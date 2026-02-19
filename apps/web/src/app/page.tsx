@@ -1,19 +1,12 @@
 import styles from "./page.module.css";
-
-async function getWorld() {
-  const base = process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:3001";
-  const res = await fetch(`${base}/world`, { next: { revalidate: 5 } });
-  return res.ok ? res.json() : {};
-}
-
-async function getEvents() {
-  const base = process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:3001";
-  const res = await fetch(`${base}/events?limit=20`, { next: { revalidate: 5 } });
-  return res.ok ? res.json() : [];
-}
+import { getEvents, getMessages, getWorld } from "@/lib/api";
 
 export default async function Home() {
-  const [world, events] = await Promise.all([getWorld(), getEvents()]);
+  const [world, events, messages] = await Promise.all([
+    getWorld(),
+    getEvents(),
+    getMessages()
+  ]);
 
   return (
     <div className={styles.page}>
@@ -34,6 +27,16 @@ export default async function Home() {
               {events.map((e: any) => (
                 <li key={e.id}>
                   <strong>{e.event_type}</strong> — {e.summary ?? ""}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className={styles.card}>
+            <h2>Town Chat</h2>
+            <ul>
+              {messages.map((m: any) => (
+                <li key={m.id}>
+                  <strong>{m.sender_bot_id?.slice(0, 8) ?? "bot"}</strong>: {m.content}
                 </li>
               ))}
             </ul>

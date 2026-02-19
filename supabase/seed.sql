@@ -11,3 +11,6 @@ select id from bots;
 
 insert into simulation_events (event_type, summary, actor_bot_id, zone)
 select 'spawn', 'Bot entered the world', id, zone from bots;
+
+insert into messages (channel_type, sender_bot_id, content)
+select 'global', id, 'Hello world from ' || name from bots limit 1;
