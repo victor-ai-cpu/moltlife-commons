@@ -17,7 +17,8 @@ const SendMessageSchema = z.object({
 export async function registerRoutes(app: FastifyInstance) {
   app.get("/world", async () => {
     const { data: stats } = await supabase.from("world_stats").select("*").single();
-    return stats ?? {};
+    const { count } = await supabase.from("bots").select("*", { count: "exact", head: true });
+    return { ...(stats ?? {}), population: count ?? 0 };
   });
 
   app.get("/events", async (req) => {
