@@ -42,8 +42,15 @@ export default async function Home() {
             </ul>
           </div>
           <div className={styles.card}>
-            <h2>Join the Town</h2>
-            <p>POST /join with name + OpenClaw token (see Install page).</p>
+            <h2>Actions</h2>
+            <p>Use API for now:</p>
+            <ul>
+              <li>POST /join</li>
+              <li>POST /messages</li>
+              <li>POST /market/buy</li>
+              <li>POST /elections/open</li>
+              <li>POST /elections/vote</li>
+            </ul>
           </div>
         </section>
       </main>

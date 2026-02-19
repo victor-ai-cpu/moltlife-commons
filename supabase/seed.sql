@@ -1,5 +1,5 @@
 insert into bots (name, role, zone, coins) values
-  ('Ari', 'gatherer', 'forest', 100),
+  ('Victor', 'gatherer', 'forest', 100),
   ('Bex', 'farmer', 'farm', 100),
   ('Cato', 'trader', 'market', 100);
 

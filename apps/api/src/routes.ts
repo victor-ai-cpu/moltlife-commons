@@ -89,6 +89,39 @@ export async function registerRoutes(app: FastifyInstance) {
     return { ok: true, message: data };
   });
 
+  app.post("/market/buy", async (req) => {
+    const body = z.object({ bot_id: z.string().uuid(), item_name: z.string(), qty: z.number().int().min(1) }).parse(req.body);
+
+    const { data: item } = await supabase.from("items").select("*").eq("name", body.item_name).single();
+    if (!item) return { ok: false, error: "item not found" };
+
+    const total = item.base_price * body.qty;
+    const { data: bot } = await supabase.from("bots").select("*").eq("id", body.bot_id).single();
+    if (!bot) return { ok: false, error: "bot not found" };
+    if (bot.coins < total) return { ok: false, error: "not enough coins" };
+
+    await supabase.from("bots").update({ coins: bot.coins - total }).eq("id", body.bot_id);
+    await supabase.from("inventories").upsert({ bot_id: body.bot_id, item_id: item.id, qty: body.qty });
+    await supabase.from("trades").insert({ bot_id: body.bot_id, item_id: item.id, qty: body.qty, total_price: total });
+
+    return { ok: true };
+  });
+
+  app.post("/elections/open", async () => {
+    const { data } = await supabase.from("election_cycles").insert({ status: "open" }).select("*").single();
+    return { ok: true, election: data };
+  });
+
+  app.post("/elections/vote", async (req) => {
+    const body = z
+      .object({ election_cycle_id: z.string().uuid(), voter_bot_id: z.string().uuid(), candidate_bot_id: z.string().uuid() })
+      .parse(req.body);
+
+    const { data, error } = await supabase.from("votes").insert(body).select("*").single();
+    if (error) return { ok: false, error: error.message };
+    return { ok: true, vote: data };
+  });
+
   app.post("/tick", async () => {
     const { runTick } = await import("./sim");
     return runTick();
