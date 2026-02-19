@@ -90,7 +90,8 @@ export async function registerRoutes(app: FastifyInstance) {
   });
 
   app.post("/tick", async () => {
-    return { ok: true };
+    const { runTick } = await import("./sim");
+    return runTick();
   });
 
   app.post("/chat/ingest", async () => {

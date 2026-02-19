@@ -14,3 +14,9 @@ select 'spawn', 'Bot entered the world', id, zone from bots;
 
 insert into messages (channel_type, sender_bot_id, content)
 select 'global', id, 'Hello world from ' || name from bots limit 1;
+
+insert into items (name, base_price) values
+  ('food', 5),
+  ('fish', 8),
+  ('wood', 3)
+on conflict do nothing;
